@@ -49,8 +49,9 @@ Adafruit_WINC1500 WiFi(WINC_CS, WINC_IRQ, WINC_RST);
 // pins.  Try pin 9 for example.
 // **** WARNING ****
 #define LED_PIN  13  // This example assumes you have a LED connected to pin 13
-#define LEFT_PIN 17 // Alter to be whatever we want left bongo/left signal to be
-#define RIGHT_PIN 18 // Aleter to be whatever we want right bongo/right signal to be
+#define COWBELL_PIN 11 // Output signal to Soundboard on this pin
+
+bool cowbell_on = false; // Global variable to check if cowbell should be on or not
 
 char ssid[] = "feather";      //  created AP name
 char pass[] = "wing";         // (not supported yet)
@@ -64,16 +65,10 @@ void setup() {
   digitalWrite(WINC_EN, HIGH);
 #endif
 
-// Removing wait for Serial console connection to work in disconnected mode
-//  while (!Serial);
-//  delay(1000);
-//  Serial.begin(9600);      // initialize serial communication
-
   Serial.println("Access Point Web Server");
 
   pinMode(LED_PIN, OUTPUT);      // set the LED pin mode
-  pinMode(LEFT_PIN, OUTPUT);      // set the LEFT pin mode
-  pinMode(RIGHT_PIN, OUTPUT);      // set the RIGHT pin mode
+  pinMode(COWBELL_PIN, OUTPUT);      // set the COWBELL pin mode
 
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -90,7 +85,6 @@ void setup() {
   server.begin();                           // start the web server on port 80
   printWifiStatus();                        // you're connected now, so print out the status
 }
-
 
 void loop() {
   Adafruit_WINC1500Client client = server.available();   // listen for incoming clients
@@ -125,11 +119,10 @@ void loop() {
             // the content of the HTTP response follows the header:
 //            client.print("<head><link rel='stylesheet' type='text/css' href=\"assets/css/main.css\"> </head>");
 //            client.print("<head><link rel='stylesheet' type='text/css' href=\"assets/css/fon-awesome.min.css\"> </head>");
-            client.print("<body style='background-image:url(bongos.png)'>");
+//            client.print("<body style='background-image:url(cowbell.png)'>");
             client.print("<h1 style='color:blue;'>Welcome to Breakin\' Beats!</h1>");
-            client.print("<h2 style='color:red;'>Click <a href=\"/L\">here</a> for left bongo</h2>");
-            client.print("<h2 style='color:orange;'>Click <a href=\"/R\">here</a> for right bongo</h2>");
-            client.print("</body>");         
+            client.print("<h2 style='color:red;'>Click <a href=\"/C\">here</a> for cowbell</h2>");
+//            client.print("</body>");
 
             // The HTTP response ends with another blank line:
             client.println();
@@ -144,26 +137,17 @@ void loop() {
           currentLine += c;      // add it to the end of the currentLine
         }
 
-        // Check to see if the client request was "GET /L" or "GET /R":
-        if (currentLine.endsWith("GET /L")) {
+        // Check to see if the client request was "GET /C":
+        if (currentLine.endsWith("GET /C")) {
           // Test LED long blink
           digitalWrite(LED_PIN, HIGH);
           delay(1000);
           digitalWrite(LED_PIN, LOW);
           // Send Soundcard signal
-          digitalWrite(LEFT_PIN, HIGH);
-          delay(1000);
-          digitalWrite(LED_PIN, LOW);
-        }
-        if (currentLine.endsWith("GET /R")) {
-          // Test LED short blink
-          digitalWrite(LED_PIN, HIGH);
-          delay(10);
-          digitalWrite(LED_PIN, LOW);
-          // Send Soundcard signal
-          digitalWrite(RIGHT_PIN, HIGH);
-          delay(1000);
-          digitalWrite(RIGHT_PIN, LOW);
+          cowbell_on = true;
+          //  digitalWrite(COWBELL_PIN, HIGH);
+          //  delay(1000);
+          //  digitalWrite(COWBELL_PIN, LOW);
         }
       }
     }
