@@ -7,13 +7,12 @@
 
  A simple  server that lets you play sound on Breakin' Beats crutches via the web.
  This sketch will create a new access point (with no password).
- It will then lauwebnch a new server and print out the IP address
+ It will then launch a new server and print out the IP address
  to the Serial monitor. From there, you can open that address in a web browser
  to turn on and off the LED on pin 13 and generate sound input.
 
  If the IP address of your shield is yourAddress:
- http://yourAddress/R turns on Right sound via input sent to Soundcard
- http://yourAddress/L turns on Left sound
+ http://yourAddress/C turns on cowbell sound via input sent to Soundcard
 
  This example is written for a network using WPA encryption. For
  WEP or WPA, change the Wifi.begin() call accordingly.
@@ -24,14 +23,14 @@
 
 /*
   Found 8 Files
-  0 name: T00     OGG size: 10538
-  1 name: BONGO1  WAV size: 57338
-  2 name: BONGO2  WAV size: 106094
-  3 name: GUITARG WAV size: 2429792
-  4 name: GUITARF WAV size: 2426392
-  5 name: GUITARC WAV size: 2435544
-  6 name: GUITARAMWAV size: 2432092
-  7 name: COWBELL WAV size: 13284
+  0  name: T00     OGG size: 10538
+  1 name: GUITARG WAV size: 357428
+  2 name: COWBELL WAV size: 13284
+  3 name: BONGO2  WAV size: 12070
+  4 name: GUITARAMWAV size: 358244
+  5 name: GUITARC WAV size: 357872
+  6 name: GUITARF WAV size: 356996
+  7 name: BONGO1  WAV size: 7758
   ========================
 */
 
@@ -141,38 +140,32 @@ void loop() {
 
   if (cowbell_on) {
     Serial.println("More cowbell!");
-    sfx.playTrack(7);
+    sfx.playTrack(2);
     cowbell_on = false;
   }
 
   if (analogRead(DRUM_PIN_2) > DRUM_PIN_2_THRESH) {
     Serial.println("Drum 2 triggered");
-    if (! sfx.stop()) {
-      Serial.println("Failed to stop");
-    }
-    sfx.playTrack(2);
+    sfx.playTrack(3);
   }
 
   if (analogRead(DRUM_AND_STRUM_PIN) > DRUM_AND_STRUM_PIN_THRESH) {
     Serial.println("Drum and strum triggered");
     if (digitalRead(GUITAR_C_PIN) == LOW) {
       Serial.println("C");
-      if (! sfx.stop()) {
-        Serial.println("Failed to stop");
-      }
       sfx.playTrack(5);
     } else if (digitalRead(GUITAR_F_PIN) == LOW) {
       Serial.println("F");
-      sfx.playTrack(5);
+      sfx.playTrack(6);
     } else if (digitalRead(GUITAR_G_PIN) == LOW) {
       Serial.println("G");
-      sfx.playTrack(3);
+      sfx.playTrack(1);
     } else if (digitalRead(GUITAR_Am_PIN) == LOW) {
       Serial.println("Am");
-      sfx.playTrack(6);
+      sfx.playTrack(4);
     } else {
       Serial.println("Bongo 1");
-      sfx.playTrack(1);
+      sfx.playTrack(7);
     }
   }
 
