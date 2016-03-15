@@ -147,7 +147,9 @@ void loop() {
 
   if (analogRead(DRUM_PIN_2) > DRUM_PIN_2_THRESH) {
     Serial.println("Drum 2 triggered");
-    delay(10);
+    if (! sfx.stop()) {
+      Serial.println("Failed to stop");
+    }
     sfx.playTrack(2);
   }
 
@@ -155,6 +157,9 @@ void loop() {
     Serial.println("Drum and strum triggered");
     if (digitalRead(GUITAR_C_PIN) == LOW) {
       Serial.println("C");
+      if (! sfx.stop()) {
+        Serial.println("Failed to stop");
+      }
       sfx.playTrack(5);
     } else if (digitalRead(GUITAR_F_PIN) == LOW) {
       Serial.println("F");
